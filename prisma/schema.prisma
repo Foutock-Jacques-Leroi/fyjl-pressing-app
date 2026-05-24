@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// =============================================================
+// ENUMS
+// =============================================================
+
+enum ReservationStatus {
+  IN_PROGRESS
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum MaritalStatus {
+  SINGLE
+  COUPLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum AgeInterval {
+  FROM_18_TO_25
+  FROM_26_TO_35
+  FROM_36_TO_45
+  FROM_46_TO_60
+  FROM_60_PLUS
+}
+
+// =============================================================
+// CLIENT
+// =============================================================
+
+model Client {
+  c_id           String         @id @default(cuid())
+  name           String
+  numero         String         @unique
+  address        String?
+  marital_status MaritalStatus
+  age_interval   AgeInterval?
+  email          String        @unique
+  profession     String?
+  isAffiliate    Boolean       @default(false)
+  isSubscribe    Boolean       @default(false)
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+
+  reservations   Reservation[]
+
+  @@map("clients")
+}
+
+// =============================================================
+// SERVICE
+// =============================================================
+
+model Service {
+  srv_id      String              @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal             @db.Decimal(10, 2)  // reference unit price
+  created_at  DateTime            @default(now())
+  updated_at  DateTime            @updatedAt
+
+  reservation_items ReservationItem[]
+
+  @@map("services")
+}
+
+// =============================================================
+// RESERVATION  — header record, belongs to one Client
+// total_price is the SUM of all ReservationItem.sub_total
+// srv_id removed: a reservation can now hold many services
+// =============================================================
+
+model Reservation {
+  trs_id      String            @id @default(cuid())
+  status      ReservationStatus @default(IN_PROGRESS)
+  notes       String?
+  date        DateTime                              // pickup date
+  total_price Decimal           @default(0)  @db.Decimal(10, 2)
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+
+  c_id        String
+  client      Client            @relation(fields: [c_id], references: [c_id])
+
+  items       ReservationItem[]
+
+  @@map("reservations")
+}
+
+// =============================================================
+// RESERVATION ITEM  ← NEW TABLE
+// One row per service line inside a reservation.
+// Captures unit_price at booking time (snapshot of Service.price)
+// so a future price change on Service does not alter past invoices.
+// =============================================================
+
+model ReservationItem {
+  item_id     String   @id @default(cuid())
+  quantity    Int      @default(1)
+  unit_price  Decimal  @db.Decimal(10, 2)   // snapshot of Service.price at booking time
+  sub_total   Decimal  @db.Decimal(10, 2)   // quantity * unit_price
+
+  trs_id      String
+  reservation Reservation @relation(fields: [trs_id], references: [trs_id], onDelete: Cascade)
+
+  srv_id      String
+  service     Service     @relation(fields: [srv_id], references: [srv_id])
+
+  @@map("reservation_items")
+}
