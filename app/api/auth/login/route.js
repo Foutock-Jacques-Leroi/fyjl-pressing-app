@@ -17,7 +17,7 @@ export async function POST(request){
     .from("clients")
     .select("c_id, name, email, profession, numero, marital_status, age_interval")
     .eq("numero", numero)
-    .single()
+    .maybeSingle()
 
     if (Error){
         return NextResponse.json({message:Error.message})

@@ -44,7 +44,7 @@ export async function POST(request){
       age_interval,
       created_at
     `)
-    .single()
+    .maybeSingle()
     
     if (error){
         return NextResponse.json({message:"not found", mes: error.message})
