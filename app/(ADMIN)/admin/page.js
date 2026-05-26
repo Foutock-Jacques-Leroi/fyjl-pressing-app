@@ -6,7 +6,8 @@ export default async function AdminPage(){
 
     <>
     
-    <AdminSidebar />
+    
+    <h1 className="flex justify-center text-2xl text-blue">Hello</h1>
     
     </>
   )
