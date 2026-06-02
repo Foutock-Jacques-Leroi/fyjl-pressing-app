@@ -59,6 +59,7 @@ export default function SignupPage() {
   const [error,   setError]   = useState("")
   const [marital, setMarital] = useState("")
   const [age,     setAge]     = useState("")
+  const [client, setClient] = useState("")
 
   const router = useRouter()
     useEffect(()=>{
@@ -67,9 +68,12 @@ export default function SignupPage() {
         const res = await fetch('/api/auth/me')
 
         if (res.ok){
-          console.log(res.json())
+          const data = await res.json()
+          setClient(data.client)
+          console.log(data.client)
           router.push("/clientsPage")
         }
+        
       }catch(error){
         console.log(error)
       }
