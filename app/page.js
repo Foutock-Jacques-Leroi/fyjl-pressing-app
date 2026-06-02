@@ -1,6 +1,6 @@
 'use client';
 import { AdminCard } from './Components/adminServiceCard';
-import { ClientCard } from './Components/serviceCard';
+// import { ClientCard } from './Components/serviceCard';
 import React, { useState } from 'react';
 import { Shirt, Calendar, ShieldCheck, Clock, Menu, X, MapPin, Phone, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -296,21 +296,6 @@ export default function LandingPage() {
             </ul>
           </div>
 
-
-<AdminCard
-  name="Pro Plan"
-  description="Full access to all features with priority support."
-  price={49.99}
-  onEdit={() => console.log("edit")}
-  onDelete={() => console.log("delete")}
-/>
-
-// ClientCard
-<ClientCard
-  name="Pro Plan"
-  description="Full access to all features with priority support."
-  price={49.99}
-/>
 
           {/* Mentions de réassurance */}
           <div className="space-y-3">
