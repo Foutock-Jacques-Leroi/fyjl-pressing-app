@@ -1,22 +1,13 @@
 import ClientNavbar from "@/app/Components/clientNavbar"
+import { Toaster } from "@/components/ui/sonner"
+
 
 export default async function Layout({children}){
-
-return(
+  return (
     <>
-    
-    <html>
-
-    <body>
-        <main>
-            <ClientNavbar />
-            {children}
-        </main>
-    </body>
-
-    </html>
-    
+      <ClientNavbar />
+      {children}
+      <Toaster />
     </>
-)
-
+  )
 }

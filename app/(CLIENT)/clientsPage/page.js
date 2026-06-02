@@ -1,15 +1,37 @@
-import ClientNavbar from "@/app/Components/clientNavbar";
+"use client"
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default async function clientSide() {
+
+export default function clientSide() {
+
+    const [client, setClient] = useState("")
+
+    useEffect(()=>{
+        async function UserSession(){
+            try{
+            const res = await fetch("/api/auth/me")
+
+            if (res.ok){
+            const data = await res.json()
+            setClient(data.client)
+            // console.log(data.user)
+            }
+        }catch(error){
+            return "Erro in request"
+        }
+        }
+        UserSession()
+    }, [])
+
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <ClientNavbar />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-10">
         <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
           <div className="space-y-6">
             <p className="inline-flex rounded-full bg-indigo-100 px-4 py-1 text-sm font-semibold uppercase tracking-[0.32em] text-indigo-700">
-              Client dashboard
+              WELCOME {client?.name}
             </p>
             <div className="space-y-3">
               <h1 className="text-4xl font-extrabold tracking-tight text-slate-950">Your client hub is ready.</h1>

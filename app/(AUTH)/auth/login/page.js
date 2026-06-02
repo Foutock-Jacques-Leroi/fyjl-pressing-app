@@ -1,13 +1,33 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [error, setError]     = useState("")
   const [focused, setFocused] = useState("")
+
+  const router = useRouter()
+    useEffect(()=>{
+      async function fetchsession(){
+    try{
+        const res = await fetch('/api/auth/me')
+
+        if (res.ok){
+          console.log(res.json())
+          router.push("/clientsPage")
+        }
+      }catch(error){
+        console.log(error)
+      }
+    }
+    // fetchsession()
+
+      },[])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -29,7 +49,10 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (!res.ok) setError(data.message || "Impossible de se connecter.")
-      else        { setMessage(data.message || "Connexion réussie !"); e.target.reset() }
+
+      else        
+        { setMessage(data.message || "Connexion réussie !");
+           router.push("/clientsPage") }
     } catch { setError("Erreur réseau. Réessaie plus tard.") }
     finally  { setLoading(false) }
   }

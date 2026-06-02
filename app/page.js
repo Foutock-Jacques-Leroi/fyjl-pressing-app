@@ -3,6 +3,7 @@ import { AdminCard } from './Components/adminServiceCard';
 import { ClientCard } from './Components/serviceCard';
 import React, { useState } from 'react';
 import { Shirt, Calendar, ShieldCheck, Clock, Menu, X, MapPin, Phone, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LandingPage() {
   // Gestion de l'état dynamique du menu mobile (UX Mobile-First)
@@ -26,10 +27,10 @@ export default function LandingPage() {
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
               <a href="#services" className="hover:text-blue-600 transition-colors font-semibold">Services</a>
               <a href="#services" className="hover:text-blue-600 transition-colors font-semibold">Contact</a>
-              <a href="#contact" className="hover:text-blue-600 transition-colors text-green-500 font-extrabold">S'Enregistrer</a>
-              <button className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-xs transition-all">
+              <Link href="/auth/signup" className="hover:text-blue-600 transition-colors text-green-500 font-extrabold">S'Enregistrer</Link>
+              <Link href="/auth/login" className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-xs transition-all">
                 Réserver Un Ramassage
-              </button>
+              </Link>
             </div>
 
             {/* Menu Mobile Button (Trigger) */}
@@ -72,19 +73,20 @@ export default function LandingPage() {
               >
                 Contact
               </a>
-              <a 
-                href="#contact" 
+              <Link 
+                href="/auth/signup" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-balance font-extrabold text-slate-700 hover:text-blue-600 transition-colors py-2 border-b border-slate-50"
               >
                 S'Enregistrer
-              </a>
-              <button 
+              </Link>
+              <Link
+                href={"/auth/login"} 
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-xs transition-colors text-center"
               >
                 Réserver un ramassage
-              </button>
+              </Link>
             </nav>
           </div>
         </>

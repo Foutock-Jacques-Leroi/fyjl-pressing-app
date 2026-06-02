@@ -63,7 +63,7 @@ import {randomUUID} from "crypto"
 export async function GET(request){
 
 
-    const {data: client, error: Error} = await supabase
+    const {data: services, error: Error} = await supabase
     .from("services")
     .select("*")
 
@@ -73,5 +73,5 @@ export async function GET(request){
 
 
 
-    return NextResponse.json({message:"All services fetched", client}, {status: 200})
+    return NextResponse.json({services}, {status: 200})
 }

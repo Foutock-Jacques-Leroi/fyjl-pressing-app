@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   User, Phone, Mail, MapPin, Briefcase,
@@ -51,6 +51,7 @@ const fields = [
   { name:"address",    label:"Adresse",          type:"text",  placeholder:"12 Rue de la Paix, Paris",Icon: MapPin   },
   { name:"profession", label:"Profession",       type:"text",  placeholder:"Avocat, Médecin…",       Icon: Briefcase },
 ]
+import { useRouter } from "next/navigation"
 
 export default function SignupPage() {
   const [loading, setLoading] = useState(false)
@@ -59,7 +60,30 @@ export default function SignupPage() {
   const [marital, setMarital] = useState("")
   const [age,     setAge]     = useState("")
 
+  const router = useRouter()
+    useEffect(()=>{
+      async function fetchsession(){
+    try{
+        const res = await fetch('/api/auth/me')
+
+        if (res.ok){
+          console.log(res.json())
+          router.push("/clientsPage")
+        }
+      }catch(error){
+        console.log(error)
+      }
+    }
+    fetchsession()
+
+      },[])
+      
+
+
+
   async function handleSubmit(e) {
+
+
     e.preventDefault()
     setError(""); setMessage("")
     setLoading(true)

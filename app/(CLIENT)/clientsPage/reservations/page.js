@@ -1,24 +1,86 @@
 "use client"
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/sonner";
+// import { toast } from "@/components/ui/sonner";
+import { Toast } from "radix-ui";
 
-const sampleReservations = [
-  { id: "R-1001", service: "Relaxing Massage", date: "June 5, 2026", time: "2:30 PM", status: "Confirmed", staff: "Laura" },
-  { id: "R-1002", service: "Skin Consultation", date: "June 12, 2026", time: "11:00 AM", status: "Pending", staff: "Nina" },
-  { id: "R-1003", service: "Wellness Check", date: "July 2, 2026", time: "4:00 PM", status: "Confirmed", staff: "Marco" },
-];
 
 export default function ReservationsPage() {
-  const [reservations, setReservations] = useState(sampleReservations);
+  
+const [client, setClient] = useState("")
 
-  function handleCancel(id) {
-    setReservations((current) => current.filter((reservation) => reservation.id !== id));
+   useEffect(()=>{
+        async function UserSession(){
+            try{
+            const res = await fetch("/api/auth/me")
+
+            if (res.ok){
+            const data = await res.json()
+            setClient(data.client)
+            // console.log(data.user)
+            }
+        }catch(error){
+            return "Erro in request"
+        }
+        }
+        UserSession()
+    }, [])
+
+// console.log(reserveItems, me)
+
+// useEffect(() => {
+  
+//   async function LoadReservations() {
+
+//     const sessionUser = await getSessionUser()
+
+//     if (!sessionUser){
+//       setError("User not authenticated.")
+//       setLoading(false)
+//       return
+//     }
+
+//     console.log(sessionUser)
+//     setMe(sessionUser)
+//   }
+
+//   LoadReservations()
+// }, [])
+
+
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    fd.append("c_id", client.c_id)  
+
+    const res = await fetch('/clientsPage/reservations/api', {
+        method: "POST",
+        body: fd
+    })
+
+    if (!res.ok) {
+      toast.error("Failed to create reservation.")
+    }
+
+    const data = await res.json()
+    console.log(data)
+    toast("Success !", {
+      description: "Your reservation has been saved. Now finalise it by booking a service.",
+    })
+    // toast.success("Réservation créée avec succès !")
+  
+  // console.log(client)
   }
 
   return (
@@ -28,101 +90,88 @@ export default function ReservationsPage() {
           <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.32em] text-indigo-600">My reservations</p>
-                <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950">Your schedule at a glance.</h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review upcoming appointments, confirm details, or update your bookings instantly.</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.32em] text-indigo-600">Réservations</p>
+                <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950">Créer et consulter vos lignes de réservation</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                  Ajoutez un article de réservation {client?.name} pour un service existant et suivez les données enregistrées.
+                </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button className={"font-black border-3"} asChild>
-                  <Link className="px-5 py-6 font-bold" href="/clientsPage/services">Book a new service</Link>
+                <Button className="p-6 font-black border-4" asChild>
+                  <Link href="/clientsPage/services">Voir les services</Link>
                 </Button>
-                <Button className={"font-extrabold border-3"} variant="outline" asChild>
-                  <Link className="px-5 py-6" href="/clientsPage/clients">Account settings</Link>
+                <Button variant="outline" className="p-6 font-black border-4" asChild>
+                  <Link href="/clientsPage/clients">Profil client</Link>
                 </Button>
               </div>
             </div>
           </section>
 
-          <Card className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/40">
+
+        <div>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <input type="date" name="date" className="mb-4 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />  
+          <input type="text" name="notes" placeholder="Search..." className="mb-4 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />  
+        
+        <button className="mb-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" type="submit">
+          Submit
+        </button>
+        </form>
+        </div>
+
+       
+
+          {/* <Card className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/40">
             <CardHeader className="px-6 py-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <CardTitle>Reservation overview</CardTitle>
-                  <CardDescription>Recent bookings and status updates for your active appointments.</CardDescription>
+                  <CardTitle>Liste des articles de réservation</CardTitle>
+                  <CardDescription>Affiche tous les `reservation_items` enregistrés dans la base.</CardDescription>
                 </div>
-                <Badge variant="secondary" className="rounded-full px-3 py-1.5 text-sm">{reservations.length} active bookings</Badge>
               </div>
             </CardHeader>
 
             <CardContent className="px-4 pb-10 sm:px-8">
-              <Table className="min-w-full ">
+              <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Item ID</TableHead>
+                    <TableHead>Reservation ID</TableHead>
                     <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Staff</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead>Quantité</TableHead>
+                    <TableHead>Prix unitaire</TableHead>
+                    <TableHead>Montant</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reservations.map((reservation) => (
-                    <TableRow className="font-serif" key={reservation.id}>
-                      <TableCell className="font-bold p-4 font-serif text-slate-900">{reservation.service}</TableCell>
-                      <TableCell className="font-serif">{reservation.date}</TableCell>
-                      <TableCell className="font-serif">{reservation.time}</TableCell>
-                      <TableCell>
-                        <Badge className={"font-black p-4 text-sm"} variant={reservation.status === "Confirmed" ? "secondary" : reservation.status === "Pending" ? "outline" : "destructive"}>
-                          {reservation.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{reservation.staff}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex flex-wrap justify-end gap-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">Details</Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogTitle>Reservation {reservation.id}</DialogTitle>
-                              <DialogDescription>
-                                <p className="mb-3 text-sm text-slate-700">Service: {reservation.service}</p>
-                                <p className="mb-3 text-sm text-slate-700">Date: {reservation.date}</p>
-                                <p className="mb-3 text-sm text-slate-700">Time: {reservation.time}</p>
-                                <p className="mb-3 text-sm text-slate-700">Staff: {reservation.staff}</p>
-                                <p className="text-sm text-slate-500">Use the cancel button below to remove this reservation from your schedule.</p>
-                              </DialogDescription>
-                              <DialogFooter>
-                                <Button variant="">Close</Button>
-                                <Button variant="destructive" onClick={() => handleCancel(reservation.id)}>Cancel Booking</Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                          <Button variant="ghost" size="sm" onClick={() => handleCancel(reservation.id)}>Cancel</Button>
-                        </div>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                        Chargement des données...
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : items.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                        Aucun article de réservation trouvé.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    reserveItems.map((item) => (
+                      <TableRow key={item.item_id}>
+                        <TableCell>{item.item_id}</TableCell>
+                        <TableCell>{item.trs_id}</TableCell>
+                        <TableCell>{services.find((service) => service.srv_id === item.srv_id)?.name ?? item.srv_id}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{item.unit_price}</TableCell>
+                        <TableCell>{item.sub_total}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
-
-            <CardFooter className="px-6 py-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-slate-600">Need help changing your reservation? Contact support or update it through your profile page.</p>
-                <Button asChild>
-                  <Link href="/clientsPage/services">Book another service</Link>
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-
-          {reservations.length === 0 && (
-            <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white p-8 text-center text-slate-600 shadow-sm">
-              No reservations yet — start by booking a service in the services section.
-            </div>
-          )}
+          </Card> */}
         </div>
       </main>
     </div>

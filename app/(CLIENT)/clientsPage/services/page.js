@@ -1,18 +1,55 @@
+
 "use client"
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import LoadingDots from "@/app/Components/loading";
 
-const services = [
-  { id: "S-1", title: "Premium Care", description: "A full-service wellness session designed to relax and recharge your body.", badge: "Best seller", price: "From 1500 XAF" },
-  { id: "S-2", title: "Focus Session", description: "Targeted treatments to sharpen comfort and target your priority areas.", badge: "Personalized", price: "2000 XAF" },
-  { id: "S-3", title: "Self-Care Boost", description: "A quick refresh package that keeps your routine effortless and effective.", badge: "Fast service", price: "750 XAF" },
-];
+// const services = [
+//   { id: "S-1", title: "Premium Care", description: "A full-service wellness session designed to relax and recharge your body.", badge: "Best seller", price: "From 1500 XAF" },
+//   { id: "S-2", title: "Focus Session", description: "Targeted treatments to sharpen comfort and target your priority areas.", badge: "Personalized", price: "2000 XAF" },
+//   { id: "S-3", title: "Self-Care Boost", description: "A quick refresh package that keeps your routine effortless and effective.", badge: "Fast service", price: "750 XAF" },
+// ];
+
+
 
 export default function ServicesPage() {
+
+  const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function LoadService() {
+
+    try{
+      
+      const res = await fetch('/clientsPage/services/api')
+
+      const data = await res.json()
+
+      if(!res.ok){
+        console.log("No data fetched")
+      }
+
+      setServices(data.services)
+    }catch(error){
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+    }
+    LoadService()
+
+  }, [])
+
+
+  
+
+
   return (
     <div className="min-h-screen bg-slate-50 font-serif">
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-10">
@@ -36,14 +73,16 @@ export default function ServicesPage() {
           </section>
 
           <div className="grid gap-6 lg:grid-cols-3">
-            {services.map((service) => (
-              <Card key={service.id} className="overflow-hidden rounded-[1.75rem] border border-slate-200 shadow-lg shadow-slate-200/20">
+            
+            {
+            (services || []).map((service) => (
+              <Card key={service.srv_id} className="overflow-hidden rounded-[1.75rem] border border-slate-200 shadow-lg shadow-slate-200/20">
                 <CardHeader className="space-y-4 px-6 pt-6">
                   <div className="flex items-center justify-between gap-3">
-                    <CardTitle className={"font-bold text-2xl font-mono"}>{service.title}</CardTitle>
+                    <CardTitle className={"font-bold text-2xl font-mono"}>{service.name}</CardTitle>
                     <Badge variant="secondary" className="rounded-full px-3 py-1.5 text-sm">{service.badge}</Badge>
                   </div>
-                  <CardDescription>{service.description}</CardDescription>
+                  <CardDescription className={"font-bold"}>{service.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="px-6 pb-6 pt-2">
                   <div className="rounded-3xl bg-slate-50 p-5 text-slate-700">
@@ -52,10 +91,12 @@ export default function ServicesPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end px-6 pb-6 pt-2">
-                  <Button>Book now</Button>
+                  <Button><Link href="/clientsPage/reservations">Book now</Link></Button>
                 </CardFooter>
               </Card>
-            ))}
+            ))
+          }
+        
           </div>
 
           <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/30">

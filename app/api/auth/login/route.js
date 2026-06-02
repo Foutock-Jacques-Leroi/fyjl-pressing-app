@@ -39,7 +39,8 @@ export async function POST(request){
    await sessions.save()
 
    return NextResponse.json({
-    message: "Connexion etablit!"
+    message: "Connexion etablit!",
+    client: sessions.client
    }, {status:201})
 
 

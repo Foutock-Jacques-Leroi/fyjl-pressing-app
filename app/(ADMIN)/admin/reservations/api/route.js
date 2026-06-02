@@ -77,5 +77,5 @@ export async function GET(request){
 
 
 
-    return NextResponse.json({message:"All reservations fetched!", reservation}, {status: 200})
+    return NextResponse.json({reservation}, {status: 200})
 }

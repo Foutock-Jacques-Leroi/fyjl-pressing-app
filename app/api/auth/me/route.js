@@ -8,7 +8,7 @@ export async function GET(request){
     try{
     const sessionUser = await getSessionUser()
 
-    console.log(await getSession())
+    // console.log(await getSession())
     if(!sessionUser){
         return NextResponse.json({message:"NOT AUTHENTICATED"})
     }
@@ -19,7 +19,7 @@ export async function GET(request){
     .eq("c_id", sessionUser.c_id)
     .single()
 
-    if (!client  || error){
+    if (error){
         return NextResponse.json({message:error.message}, {status: 404})
     }
 
