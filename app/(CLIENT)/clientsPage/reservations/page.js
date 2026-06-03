@@ -2,20 +2,15 @@
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/sonner";
-// import { toast } from "@/components/ui/sonner";
-import { Toast } from "radix-ui";
+import {useRouter} from "next/navigation";
 
 
 export default function ReservationsPage() {
+  const router = useRouter()
+
+  
   
 const [client, setClient] = useState("")
 
@@ -78,7 +73,7 @@ const [client, setClient] = useState("")
     toast("Success !", {
       description: "Your reservation has been saved. Now finalise it by booking a service.",
     })
-    // toast.success("Réservation créée avec succès !")
+    router.push(`/clientsPage/reservationItems?trs_id=${data.trs_id}`)    // toast.success("Réservation créée avec succès !")
   
   // console.log(client)
   }
