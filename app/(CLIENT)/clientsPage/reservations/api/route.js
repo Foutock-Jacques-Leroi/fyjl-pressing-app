@@ -49,7 +49,7 @@ export async function POST(request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data: reservation }, { status: 201 })
+    return NextResponse.json({ reservation }, { status: 201 })
 
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
